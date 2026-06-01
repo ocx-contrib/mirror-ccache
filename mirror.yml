@@ -1,0 +1,83 @@
+name: ccache
+target:
+  registry: ocx.sh
+  repository: ccache
+
+source:
+  type: github_release
+  owner: ccache
+  repo: ccache
+  tag_pattern: "^v(?P<version>\\d+\\.\\d+\\.\\d+)$"
+
+# Pass 1 — Linux. Pass 2 — darwin (universal). windows staged below for Pass 3.
+assets:
+  linux/amd64:
+    # Static musl binary (verified `static-pie`/`statically linked`) — portable
+    # across glibc + musl hosts. Anchor to .tar.xz (not .tar.gz, not .minisig).
+    - "^ccache-.*-linux-x86_64-musl-static\\.tar\\.xz$"
+  linux/arm64:
+    - "^ccache-.*-linux-aarch64-musl-static\\.tar\\.xz$"
+  darwin/amd64:
+    # Single universal darwin tarball (wrapper dir ccache-<v>-darwin/, binary at
+    # root, same layout as linux) serves both amd64 and arm64.
+    - "^ccache-.*-darwin\\.tar\\.gz$"
+  darwin/arm64:
+    - "^ccache-.*-darwin\\.tar\\.gz$"
+  # windows/amd64:
+  #   - "^ccache-.*-windows-x86_64\\.zip$"
+  # windows/arm64:
+  #   - "^ccache-.*-windows-aarch64\\.zip$"
+
+asset_type:
+  type: archive
+  strip_components: 1   # wrapper dir ccache-<v>-<plat>/; ccache(.exe) sits directly inside, no bin/
+
+metadata:
+  default: metadata.json
+
+skip_prereleases: true
+cascade: true
+build_timestamp: none
+
+versions:
+  # v4.13 (4.13.0) is tagged "v4.13" — three-segment tag pattern skips it, and
+  # the -musl-static asset layout only appears from v4.13 onward. First matching
+  # tag with that layout is v4.13.1.
+  min: "4.13.1"
+  new_per_run: 5
+  poll_interval: "0 */6 * * *"
+
+verify:
+  github_asset_digest: true
+
+concurrency:
+  max_downloads: 8
+  max_bundles: 4
+  max_pushes: 2
+  rate_limit_ms: 100
+  max_retries: 3
+  compression_threads: 0
+
+tests:
+  - name: smoke
+    script: tests/smoke.star
+
+platforms:
+  linux/amd64:
+    runner: ubuntu-latest
+  linux/arm64:
+    runner: ubuntu-24.04-arm
+  darwin/amd64:
+    runner: macos-13
+  darwin/arm64:
+    runner: macos-14
+  # windows/amd64:
+  #   runner: windows-latest
+  #   shell: pwsh
+  # windows/arm64:
+  #   runner: windows-11-arm
+  #   shell: pwsh
+
+notify:
+  discord:
+    webhook_secret: OCX_MIRROR_DISCORD_HOOK
