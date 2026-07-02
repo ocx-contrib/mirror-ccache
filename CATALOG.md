@@ -22,3 +22,12 @@ HTTP, and Redis remote-storage backends.
 
 - [ccache Documentation](https://ccache.dev/documentation.html)
 - [ccache on GitHub](https://github.com/ccache/ccache)
+
+## License & source
+
+The ccache binaries redistributed here are licensed **GPL-3.0-or-later** (© the
+ccache Authors). The complete Corresponding Source for each mirrored version is
+available from the upstream tagged tree — e.g. version `X.Y.Z` at
+<https://github.com/ccache/ccache/releases/tag/vX.Y.Z>, or `git clone
+https://github.com/ccache/ccache && git checkout vX.Y.Z`. The OCX mirror
+pipeline files are Apache-2.0. See `NOTICE.md` for full details.
