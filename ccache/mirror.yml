@@ -97,7 +97,7 @@ versions:
   # first matching tag carrying that layout is v4.13.1.
   min: "4.13.1"
   new_per_run: 5
-  poll_interval: "0 */6 * * *"
+  poll_interval: "45 5-23/6 * * *"
 
 tests:
   # `script:` resolves from the REPOSITORY ROOT — unlike `metadata.default` and
